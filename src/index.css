@@ -21,3 +21,8 @@ body {
 .img-dice {
   width: 550px;
 }
+@media (max-width: 500px) {
+  .img-dice {
+    width: 250px;
+  }
+}
