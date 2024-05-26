@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
+:root {
+  font-family: 'Lobster', sans-serif;
+  background-color: #003554;
+  background-image: url('https://www.transparenttextures.com/patterns/brick-wall.png');
+  color: #d9ed92;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+body {
+  height: 100svh;
+}
+
+.img-dice {
+  width: 550px;
+}
