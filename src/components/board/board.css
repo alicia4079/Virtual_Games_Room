@@ -71,7 +71,7 @@
     font-size: 40px;
   }
   .player-score {
-    font-size: 16px;
-    border: 8px groove #ffd166;
+    font-size: 14px;
+    border: 4px groove #ffd166;
   }
 }
