@@ -175,8 +175,8 @@ const BoardShip = () => {
   useEffect(() => {
     if (state.hitAlertShown) {
       const currentPlayerName = state.player1.isTurn
-        ? playerNames.playerX
-        : playerNames.playerO;
+        ? playerNames.playerO
+        : playerNames.playerX;
       alert(`${currentPlayerName} has hit!`);
       dispatch({ type: actionTypes.SHOW_HIT_ALERT, payload: false });
     }
