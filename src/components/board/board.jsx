@@ -23,18 +23,23 @@ function Board({ playerX, playerO }) {
     const winner = calculateWinner(squares)
     if (winner) {
       const winnerName = winner === 'X' ? playerX : playerO
-      alert(`Congratulations ${winnerName}, you are the winner!🏆`)
-      if (winner === 'X') {
-        updatePlayer1Score()
-      } else {
-        updatePlayer2Score()
-      }
-      resetGame()
+      setTimeout(() => {
+        alert(`Congratulations ${winnerName}, you are the winner!🏆`)
+        if (winner === 'X') {
+          updatePlayer1Score()
+        } else {
+          updatePlayer2Score()
+        }
+        resetGame()
+      }, 1000) 
     } else if (isBoardFull(squares)) {
-      alert("It's a draw!")
-      resetGame()
+      setTimeout(() => {
+        alert("It's a draw!")
+        resetGame()
+      }, 1000) 
     }
   }, [squares])
+
 
   const resetGame = () => {
     setSquares(Array(9).fill(null))

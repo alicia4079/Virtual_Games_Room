@@ -22,8 +22,9 @@ const BoardShip = () => {
     },
     gameOver: false,
     winner: null,
-    alertShown: false
-  }
+    alertShown: false,
+    hitAlertShown: false
+  };
 
   const actionTypes = {
     ADD_SHIP: 'ADD_SHIP',
@@ -33,14 +34,15 @@ const BoardShip = () => {
     SQUARE_CLICKED: 'SQUARE_CLICKED',
     ADD_PLAYER_NAMES: 'ADD_PLAYER_NAMES',
     SHOW_ALERT: 'SHOW_ALERT',
-    RESET_GAME: 'RESET_GAME'
-  }
+    RESET_GAME: 'RESET_GAME',
+    SHOW_HIT_ALERT: 'SHOW_HIT_ALERT'
+  };
 
   const gameReducer = (state, action) => {
     switch (action.type) {
       case actionTypes.ADD_SHIP:
-        const { player, ship } = action.payload
-        if (!ship) return state
+        const { player, ship } = action.payload;
+        if (!ship) return state;
 
         return {
           ...state,
@@ -49,32 +51,32 @@ const BoardShip = () => {
             ships: [...state[player].ships, ship],
             squaresClicked: 0
           }
-        }
+        };
       case actionTypes.SHOOT:
-        const { shooter, targetX, targetY } = action.payload
-        const opponent = shooter === 'player1' ? 'player2' : 'player1'
+        const { shooter, targetX, targetY } = action.payload;
+        const opponent = shooter === 'player1' ? 'player2' : 'player1';
         const hit = state[opponent]?.ships?.some((ship) =>
           ship.positions.some((pos) => pos.x === targetX && pos.y === targetY)
-        )
+        );
 
         const newShots = [
           ...(state[shooter]?.shots || []),
           { x: targetX, y: targetY, hit }
-        ]
-        let gameOver = state.gameOver
-        let winner = state.winner
-        let opponentSquaresClicked = state[opponent].squaresClicked
+        ];
+        let gameOver = state.gameOver;
+        let winner = state.winner;
+        let opponentSquaresClicked = state[opponent].squaresClicked;
 
         if (hit) {
-          opponentSquaresClicked++
+          opponentSquaresClicked++;
           const totalHitsRequired = state[opponent].ships.reduce(
             (acc, ship) => acc + ship.size,
             0
-          )
+          );
 
           if (opponentSquaresClicked === totalHitsRequired) {
-            gameOver = true
-            winner = state[shooter].name
+            gameOver = true;
+            winner = state[shooter].name;
           }
         }
 
@@ -86,25 +88,31 @@ const BoardShip = () => {
             squaresClicked: opponentSquaresClicked
           },
           gameOver,
-          winner
-        }
+          winner,
+          hitAlertShown: hit
+        };
       case actionTypes.SWITCH_TURN:
         return {
           ...state,
           player1: { ...state.player1, isTurn: !state.player1.isTurn },
           player2: { ...state.player2, isTurn: !state.player2.isTurn }
-        }
+        };
       case actionTypes.ADD_PLAYER_NAMES:
         return {
           ...state,
           player1: { ...state.player1, name: action.payload.playerX },
           player2: { ...state.player2, name: action.payload.playerO }
-        }
+        };
       case actionTypes.SHOW_ALERT:
         return {
           ...state,
           alertShown: true
-        }
+        };
+      case actionTypes.SHOW_HIT_ALERT:
+        return {
+          ...state,
+          hitAlertShown: action.payload
+        };
       case actionTypes.RESET_GAME:
         return {
           ...initialState,
@@ -116,69 +124,79 @@ const BoardShip = () => {
             ...initialState.player2,
             name: state.player2.name
           }
-        }
+        };
       default:
-        return state
+        return state;
     }
-  }
+  };
 
-  const [state, dispatch] = useReducer(gameReducer, initialState)
-  const [playerNames, setPlayerNames] = useState({ playerX: '', playerO: '' })
-  const [showModal, setShowModal] = useState(true)
+  const [state, dispatch] = useReducer(gameReducer, initialState);
+  const [playerNames, setPlayerNames] = useState({ playerX: '', playerO: '' });
+  const [showModal, setShowModal] = useState(true);
   const { player1Score, player2Score, updatePlayer1Score, updatePlayer2Score } =
-    useScoreBoard()
+    useScoreBoard();
 
   const placeShip = (player, ship) => {
-    dispatch({ type: actionTypes.ADD_SHIP, payload: { player, ship } })
-  }
+    dispatch({ type: actionTypes.ADD_SHIP, payload: { player, ship } });
+  };
 
   const shoot = (shooter, targetX, targetY) => {
     dispatch({
       type: actionTypes.SHOOT,
       payload: { shooter, targetX, targetY }
-    })
-    dispatch({ type: actionTypes.SWITCH_TURN })
-  }
+    });
+    dispatch({ type: actionTypes.SWITCH_TURN });
+  };
 
   const handleFormSubmit = (data) => {
-    setPlayerNames({ playerX: data.playerX, playerO: data.playerO })
+    setPlayerNames({ playerX: data.playerX, playerO: data.playerO });
     dispatch({
       type: actionTypes.ADD_PLAYER_NAMES,
       payload: { playerX: data.playerX, playerO: data.playerO }
-    })
-    dispatch({ type: actionTypes.SWITCH_TURN })
-    setShowModal(false)
-  }
+    });
+    dispatch({ type: actionTypes.SWITCH_TURN });
+    setShowModal(false);
+  };
 
   useEffect(() => {
-    const predefinedShips = [{ size: 2 }, { size: 3 }, { size: 4 }, { size: 5 }]
+    const predefinedShips = [{ size: 2 }, { size: 3 }, { size: 4 }, { size: 5 }];
 
-    const randomPositionsPlayer1 = generateRandomPositions(predefinedShips)
-    const randomPositionsPlayer2 = generateRandomPositions(predefinedShips)
+    const randomPositionsPlayer1 = generateRandomPositions(predefinedShips);
+    const randomPositionsPlayer2 = generateRandomPositions(predefinedShips);
 
     randomPositionsPlayer1.forEach((ship) => {
-      placeShip('player1', ship)
-    })
+      placeShip('player1', ship);
+    });
     randomPositionsPlayer2.forEach((ship) => {
-      placeShip('player2', ship)
-    })
-  }, [])
+      placeShip('player2', ship);
+    });
+  }, []);
+  
+  useEffect(() => {
+    if (state.hitAlertShown) {
+      const currentPlayerName = state.player1.isTurn
+        ? playerNames.playerX
+        : playerNames.playerO;
+      alert(`${currentPlayerName} has hit!`);
+      dispatch({ type: actionTypes.SHOW_HIT_ALERT, payload: false });
+    }
+  }, [state.hitAlertShown, state.player1.isTurn, playerNames]);
 
   useEffect(() => {
     if (state.gameOver && !state.alertShown) {
       if (state.winner === playerNames.playerX) {
-        alert(`¡${playerNames.playerX} wins!`)
-        updatePlayer1Score()
+        alert(`¡${playerNames.playerX} wins!🏆`);
+        updatePlayer1Score();
       } else if (state.winner === playerNames.playerO) {
-        alert(`¡${playerNames.playerO} wins!`)
-        updatePlayer2Score()
+        alert(`¡${playerNames.playerO} wins!🏆`);
+        updatePlayer2Score();
       }
-      dispatch({ type: actionTypes.SHOW_ALERT })
+      dispatch({ type: actionTypes.SHOW_ALERT });
 
       setTimeout(() => {
-        dispatch({ type: actionTypes.RESET_GAME })
-        setShowModal(false)
-      }, 3000)
+        dispatch({ type: actionTypes.RESET_GAME });
+        setShowModal(false);
+      }, 3000);
     }
   }, [
     state.gameOver,
@@ -187,11 +205,11 @@ const BoardShip = () => {
     updatePlayer1Score,
     updatePlayer2Score,
     state.alertShown
-  ])
+  ]);
 
   const generateRandomPositions = (ships) => {
-    const directions = ['horizontal', 'vertical']
-    const getRandomInt = (max) => Math.floor(Math.random() * max)
+    const directions = ['horizontal', 'vertical'];
+    const getRandomInt = (max) => Math.floor(Math.random() * max);
 
     const isValidPosition = (ship, existingShips) => {
       for (const existingShip of existingShips) {
@@ -201,48 +219,48 @@ const BoardShip = () => {
               Math.abs(pos.x - existingPos.x) <= 1 &&
               Math.abs(pos.y - existingPos.y) <= 1
             ) {
-              return false
+              return false;
             }
           }
         }
       }
-      return true
-    }
+      return true;
+    };
 
     const getRandomShip = (ship) => {
-      const direction = directions[getRandomInt(directions.length)]
-      const positions = []
+      const direction = directions[getRandomInt(directions.length)];
+      const positions = [];
 
-      let x, y
+      let x, y;
       if (direction === 'horizontal') {
-        x = getRandomInt(8 - ship.size)
-        y = getRandomInt(8)
+        x = getRandomInt(8 - ship.size);
+        y = getRandomInt(8);
       } else {
-        x = getRandomInt(8)
-        y = getRandomInt(8 - ship.size)
+        x = getRandomInt(8);
+        y = getRandomInt(8 - ship.size);
       }
 
       for (let i = 0; i < ship.size; i++) {
         positions.push(
           direction === 'horizontal' ? { x: x + i, y } : { x, y: y + i }
-        )
+        );
       }
 
-      return { ...ship, orientation: direction, positions }
-    }
+      return { ...ship, orientation: direction, positions };
+    };
 
-    const positionedShips = []
+    const positionedShips = [];
 
     ships.forEach((ship) => {
-      let newShip
+      let newShip;
       do {
-        newShip = getRandomShip(ship)
-      } while (!isValidPosition(newShip, positionedShips))
-      positionedShips.push(newShip)
-    })
+        newShip = getRandomShip(ship);
+      } while (!isValidPosition(newShip, positionedShips));
+      positionedShips.push(newShip);
+    });
 
-    return positionedShips
-  }
+    return positionedShips;
+  };
 
   return (
     <div className='boardShip'>
@@ -284,15 +302,15 @@ const BoardShip = () => {
       <div className='grid'>
         {Array.from({ length: 8 }).map((_, rowIndex) =>
           Array.from({ length: 8 }).map((_, colIndex) => {
-            const player = state.player1.isTurn ? 'player1' : 'player2'
+            const player = state.player1.isTurn ? 'player1' : 'player2';
             const isShot = state[player].shots.some(
               (shot) => shot.x === rowIndex && shot.y === colIndex
-            )
+            );
             const isHit =
               isShot &&
               state[player].shots.find(
                 (shot) => shot.x === rowIndex && shot.y === colIndex
-              ).hit
+              ).hit;
 
             return (
               <div
@@ -304,8 +322,8 @@ const BoardShip = () => {
                   if (!isShot) {
                     dispatch({
                       type: actionTypes.SQUARE_CLICKED
-                    })
-                    shoot(player, rowIndex, colIndex)
+                    });
+                    shoot(player, rowIndex, colIndex);
                   }
                 }}
               >
@@ -318,7 +336,7 @@ const BoardShip = () => {
                   />
                 ))}
               </div>
-            )
+            );
           })
         )}
       </div>
@@ -330,7 +348,7 @@ const BoardShip = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default BoardShip
+export default BoardShip;

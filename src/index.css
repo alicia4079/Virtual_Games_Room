@@ -21,7 +21,7 @@ body {
 .img-dice {
   width: 550px;
 }
-@media (max-width: 500px) {
+@media (max-width: 700px) {
   .img-dice {
     width: 400px;
   }

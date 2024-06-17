@@ -11,8 +11,8 @@
   align-items: flex-start;
   position: absolute;
   top: 350px;
-  left: 420px;
-  width: 700px;
+  left: 380px;
+  width: 900px;
   z-index: -1;
 }
 
@@ -25,44 +25,56 @@
   border: 12px groove #ffd166;
   padding: 6px;
 }
+@media (max-width: 1400px) {
+  .scoreboard {
+    left: 280px;
+    width: 750px;
+  }
+}
 
 @media (max-width: 1250px) {
   .scoreboard {
     left: 230px;
+    width: 700px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .scoreboard {
+    left: 180px;
     width: 600px;
   }
 }
 
-@media (max-width: 920px) {
+@media (max-width: 850px) {
   .scoreboard {
-    top: 350px;
     left: 100px;
     width: 580px;
   }
 }
 @media (max-width: 680px) {
   .scoreboard {
-    top: 350px;
-    left: 70px;
-    width: 490px;
+    left: 90px;
+    width: 540px;
+  }
+  .player-score {
+    font-size: 18px;
   }
 }
 @media (max-width: 600px) {
   .scoreboard {
-    top: 350px;
-    left: 70px;
-    width: 450px;
+    left: 40px;
+    width: 500px;
   }
   .status {
     font-size: 40px;
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 520px) {
   .scoreboard {
-    top: 250px;
-    left: 20px;
-    width: 350px;
+    left: 30px;
+    width: 420px;
   }
   .status {
     font-size: 30px;
@@ -72,6 +84,18 @@
   }
   .player-score {
     font-size: 14px;
-    border: 4px groove #ffd166;
+    border: 7px groove #ffd166;
+  }
+}
+
+@media (max-width: 440px) {
+  .scoreboard {
+    left: 22px;
+    width: 360px;
+  }
+}
+@media (max-width: 400px) {
+  .scoreboard {
+    left: 1px;
   }
 }
