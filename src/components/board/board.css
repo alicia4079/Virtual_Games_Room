@@ -94,8 +94,3 @@
     width: 360px;
   }
 }
-@media (max-width: 400px) {
-  .scoreboard {
-    left: 1px;
-  }
-}
