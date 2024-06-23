@@ -87,7 +87,6 @@ export const handleResetGame = (state, initialState) => ({
   }
 });
 
-// Función de utilidad
 export const generateRandomPositions = (ships) => {
   const directions = ['horizontal', 'vertical'];
   const getRandomInt = (max) => Math.floor(Math.random() * max);
